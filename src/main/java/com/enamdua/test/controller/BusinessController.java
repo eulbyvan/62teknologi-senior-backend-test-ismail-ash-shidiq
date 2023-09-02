@@ -19,24 +19,24 @@ public class BusinessController {
 
     @GetMapping("/search")
     public ResponseEntity<BusinessResponse> searchBusinesses(
-                                                               @RequestParam(required = false) String term,
-                                                               @RequestParam(required = false) String location,
-                                                               @RequestParam(required = false) Double latitude,
-                                                               @RequestParam(required = false) Double longitude,
-                                                               @RequestParam(required = false) Double radius,
-                                                               @RequestParam(required = false) List<String> categories,
-                                                               @RequestParam(required = false) String locale,
-                                                               @RequestParam(defaultValue = "10") int limit,
-                                                               @RequestParam(defaultValue = "0") int offset,
-                                                               @RequestParam(required = false) String sortBy,
-                                                               @RequestParam(required = false) String price,
-                                                               @RequestParam(required = false) Boolean openNow,
-                                                               @RequestParam(required = false) String openAt,
-                                                               @RequestParam(required = false) String attributes
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false) Double radius,
+            @RequestParam(required = false) List<String> categories,
+            @RequestParam(required = false) String locale,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String price,
+            @RequestParam(required = false) Boolean openNow,
+            @RequestParam(required = false) String openAt,
+            @RequestParam(required = false) String attributes
     ) {
 
         BusinessResponse response = businessService.searchBusinesses(
-                term, location, latitude, longitude, radius, categories, locale, limit, offset, sortBy, price, openNow, openAt, attributes
+                name, location, latitude, longitude, radius, categories, locale, limit, offset, sortBy, price, openNow, openAt, attributes
         );
 
         return ResponseEntity.ok(response);

@@ -6,6 +6,9 @@ import com.enamdua.test.entity.Category;
 import com.enamdua.test.repository.BusinessRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +46,7 @@ public class BusinessService {
             }
 
             if (location != null) {
-                predicates.add(criteriaBuilder.equal(root.get("location").get("city"), location));
+                predicates.add(criteriaBuilder.equal(root.get("location").get("state"), location));
             }
 
             if (latitude != null && longitude != null && radius != null) {
@@ -60,29 +63,10 @@ public class BusinessService {
                 predicates.add(criteriaBuilder.equal(root.get("price"), price));
             }
 
-//            if (locale != null) {
-//                predicates.add(criteriaBuilder.equal(root.get("locale"), locale));
-//            }
-
-//            if (openNow != null && openNow) {
-//                LocalTime now = LocalTime.now();
-//                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("openingTime"), now));
-//                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("closingTime"), now));
-//            }
-//
-//            if (openAt != null) {
-//                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("openingTime"), openAt));
-//                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("closingTime"), openAt));
-//            }
-
-//            if (attributes != null && !attributes.isEmpty()) {
-//                for (String attr : attributes.split(",")) {
-//                    predicates.add(criteriaBuilder.like(root.get("attributes"), "%" + attr.trim() + "%"));
-//                }
-//            }
-
-            // Sorting logic:
-            if ("rating".equals(sortBy)) {
+            // Sorting logic
+            if ("best_match".equals(sortBy)) {
+                query.orderBy(criteriaBuilder.desc(root.get("rating")), criteriaBuilder.desc(root.get("reviewCount")));
+            } else if ("rating".equals(sortBy)) {
                 query.orderBy(criteriaBuilder.desc(root.get("rating")));
             } else if ("reviewCount".equals(sortBy)) {
                 query.orderBy(criteriaBuilder.desc(root.get("reviewCount")));
@@ -108,45 +92,22 @@ public class BusinessService {
             String openAt,
             String attributes) {
 
+        Pageable paging = PageRequest.of(offset, limit);
+
         Specification<Business> spec = buildSpecification(
                 term, location, latitude, longitude, radius, categories, locale, limit, offset, sortBy, price, openNow, openAt, attributes
         );
 
-        List<Business> businesses = businessRepository.findAll(spec);
+        Page<Business> pagedResult = businessRepository.findAll(spec, paging);
 
+        List<Business> businesses = pagedResult.getContent();
         List<BusinessDTO> businessDTOs = businesses.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
-        // Initialize sum variables
-        double sumLatitude = 0;
-        double sumLongitude = 0;
-
-        for (Business business : businesses) {
-            sumLatitude += business.getCoordinates().getLatitude();
-            sumLongitude += business.getCoordinates().getLongitude();
-        }
-
-        double avgLatitude = 0.0;
-        double avgLongitude = 0.0;
-
-        if (!businesses.isEmpty()) {
-            avgLatitude = sumLatitude / businesses.size();
-            avgLongitude = sumLongitude / businesses.size();
-        }
-
-        CoordinatesDTO avgCoordinates = new CoordinatesDTO();
-        avgCoordinates.setLatitude(avgLatitude);
-        avgCoordinates.setLongitude(avgLongitude);
-
-        // Add region information
-        Region region = new Region();
-        region.setCenter(avgCoordinates);
-
         BusinessResponse response = new BusinessResponse();
         response.setBusinesses(businessDTOs);
-        response.setTotal(businessDTOs.size());
-        response.setRegion(region);
+        response.setTotal(pagedResult.getTotalElements());
 
         return response;
     }

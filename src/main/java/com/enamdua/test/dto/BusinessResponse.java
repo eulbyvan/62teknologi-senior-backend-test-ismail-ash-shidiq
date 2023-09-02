@@ -9,6 +9,6 @@ import java.util.List;
 @Setter
 public class BusinessResponse {
     private List<BusinessDTO> businesses;
-    private int total;
+    private long total;
     private Region region;
 }
