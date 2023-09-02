@@ -1,12 +1,15 @@
 package com.enamdua.test.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "business")
@@ -14,7 +17,13 @@ import java.util.List;
 public class Business {
 
     @Id
-    private String id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @JsonIgnore
+    private UUID id;
     private String alias;
     private String name;
     @JsonProperty("image_url")
