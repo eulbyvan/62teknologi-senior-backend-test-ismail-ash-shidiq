@@ -1,5 +1,6 @@
 package com.enamdua.test.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -16,13 +17,17 @@ public class Business {
     private String id;
     private String alias;
     private String name;
+    @JsonProperty("image_url")
     private String imageUrl;
+    @JsonProperty("is_closed")
     private Boolean isClosed;
     private String url;
+    @JsonProperty("review_count")
     private Integer reviewCount;
     private Double rating;
     private String price;
     private String phone;
+    @JsonProperty("display_phone")
     private String displayPhone;
     private Double distance;
 

@@ -1,5 +1,6 @@
 package com.enamdua.test.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,9 +12,12 @@ public class BusinessDTO {
     private String id;
     private String alias;
     private String name;
+    @JsonProperty("image_url")
     private String imageUrl;
+    @JsonProperty("is_closed")
     private boolean isClosed;
     private String url;
+    @JsonProperty("review_count")
     private int reviewCount;
     private List<CategoryDTO> categories;
     private double rating;
@@ -22,6 +26,7 @@ public class BusinessDTO {
     private String price;
     private LocationDTO location;
     private String phone;
+    @JsonProperty("display_phone")
     private String displayPhone;
     private double distance;
 }

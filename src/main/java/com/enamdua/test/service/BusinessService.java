@@ -118,12 +118,35 @@ public class BusinessService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
+        // Initialize sum variables
+        double sumLatitude = 0;
+        double sumLongitude = 0;
+
+        for (Business business : businesses) {
+            sumLatitude += business.getCoordinates().getLatitude();
+            sumLongitude += business.getCoordinates().getLongitude();
+        }
+
+        double avgLatitude = 0.0;
+        double avgLongitude = 0.0;
+
+        if (!businesses.isEmpty()) {
+            avgLatitude = sumLatitude / businesses.size();
+            avgLongitude = sumLongitude / businesses.size();
+        }
+
+        CoordinatesDTO avgCoordinates = new CoordinatesDTO();
+        avgCoordinates.setLatitude(avgLatitude);
+        avgCoordinates.setLongitude(avgLongitude);
+
+        // Add region information
+        Region region = new Region();
+        region.setCenter(avgCoordinates);
+
         BusinessResponse response = new BusinessResponse();
         response.setBusinesses(businessDTOs);
         response.setTotal(businessDTOs.size());
-
-        // Add region information
-        // ...
+        response.setRegion(region);
 
         return response;
     }

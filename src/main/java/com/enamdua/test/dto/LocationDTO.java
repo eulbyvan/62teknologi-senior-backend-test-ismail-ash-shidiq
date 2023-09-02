@@ -1,6 +1,8 @@
 package com.enamdua.test.dto;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +16,6 @@ public class LocationDTO {
     private String zipCode;
     private String country;
     private String state;
+    @JsonProperty("display_address")
     private List<String> displayAddress;
 }
